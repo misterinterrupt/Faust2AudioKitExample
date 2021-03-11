@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,7 @@
 		BA39B52125FA38C800907939 /* MyOsc.dsp in Resources */ = {isa = PBXBuildFile; fileRef = BA39B50125FA293600907939 /* MyOsc.dsp */; };
 		BA39B52325FA38CB00907939 /* FaustDSP.mm in Sources */ = {isa = PBXBuildFile; fileRef = BA39B50925FA2A4600907939 /* FaustDSP.mm */; };
 		BA39B52525FA38CD00907939 /* FaustMyOsc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39B50A25FA2A4600907939 /* FaustMyOsc.swift */; };
+		BA99344A25FA5FFB000AA088 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = BA99344925FA5FFB000AA088 /* AudioKit */; };
 		BAFE6D1E25E7AFB30020DADA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAFE6D1D25E7AFB30020DADA /* Assets.xcassets */; };
 		BAFE6D2125E7AFB30020DADA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAFE6D2025E7AFB30020DADA /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -33,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA99344A25FA5FFB000AA088 /* AudioKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +106,7 @@
 			);
 			name = Faust2AudioKitExample;
 			packageProductDependencies = (
+				BA99344925FA5FFB000AA088 /* AudioKit */,
 			);
 			productName = Faust2AudioKitExample;
 			productReference = BAFE6D1625E7AFB10020DADA /* Faust2AudioKitExample.app */;
@@ -134,6 +137,7 @@
 			);
 			mainGroup = BAFE6D0D25E7AFB10020DADA;
 			packageReferences = (
+				BA99344825FA5FFB000AA088 /* XCRemoteSwiftPackageReference "AudioKit" */,
 			);
 			productRefGroup = BAFE6D1725E7AFB10020DADA /* Products */;
 			projectDirPath = "";
@@ -365,9 +369,25 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		BA99344825FA5FFB000AA088 /* XCRemoteSwiftPackageReference "AudioKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/AudioKit.git";
+			requirement = {
+				branch = "v5-develop";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		BA39B53025FA3C9400907939 /* AudioKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = AudioKit;
+		};
+		BA99344925FA5FFB000AA088 /* AudioKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA99344825FA5FFB000AA088 /* XCRemoteSwiftPackageReference "AudioKit" */;
 			productName = AudioKit;
 		};
 /* End XCSwiftPackageProductDependency section */

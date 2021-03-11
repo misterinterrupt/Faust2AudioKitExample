@@ -6,8 +6,8 @@ import AudioKit
 /// Faust node
 public class FaustMyOsc: Node, AudioUnitContainer, Toggleable {
 
-	/// Unique four-letter identifier "dclp"
-	public static let ComponentDescription = AudioComponentDescription(instrument: "fosc")
+	/// Unique four-letter identifier. If using multiple Faust generated nodes, make this unique for each
+	public static let ComponentDescription = AudioComponentDescription(instrument: "Fdsp")
 
 	/// Internal type of audio unit for this node
 	public typealias AudioUnitType = InternalAU
@@ -17,43 +17,31 @@ public class FaustMyOsc: Node, AudioUnitContainer, Toggleable {
 	// MARK: - Parameters
 
 	// freq
-	public static var letfreqDef = NodeParameterDef(identifier: "freq",
-                                                    name: "freq",
-                                                    address: akGetParameterAddress("MyOsc_freq"),
-                                                    range: 20 ... 20000,
-                                                    unit: .customUnit,
-                                                    flags: .default)
+	public static var letfreqDef = NodeParameterDef(identifier: "freq", name: "freq", address: akGetParameterAddress("MyOsc_freq"), range: 20 ... 20000, unit: .customUnit, flags: .default)
 
 	@Parameter public var freq: AUValue
 
 	// gain
-	public static var letgainDef = NodeParameterDef(identifier: "gain",
-                                                    name: "gain",
-                                                    address: akGetParameterAddress("MyOsc_gain"),
-                                                    range: 0 ... 1,
-                                                    unit: .customUnit,
-                                                    flags: .default)
+	public static var letgainDef = NodeParameterDef(identifier: "gain", name: "gain", address: akGetParameterAddress("MyOsc_gain"), range: 0 ... 1, unit: .customUnit, flags: .default)
 
 	@Parameter public var gain: AUValue
 
-    // MARK: - Audio Unit
-
-    public class InternalAU: AudioUnitBase {
-        /// Get an array of the parameter definitions
-        /// - Returns: Array of parameter definitions
-        public override func getParameterDefs() -> [NodeParameterDef] {
-            [FaustMyOsc.letfreqDef,
-            FaustMyOsc.letgainDef]
-        }
-        /// Create the DSP Refence for this node
-        /// - Returns: DSP Reference
-        public override func createDSP() -> DSPRef {akCreateDSP("FaustMyOsc") }
-    }
+	// MARK: - Audio Unit
+	public class InternalAU: AudioUnitBase {
+		/// Get an array of the parameter definitions
+		/// - Returns: Array of parameter definitions
+		public override func getParameterDefs() -> [NodeParameterDef] {
+			[FaustMyOsc.letfreqDef,
+			FaustMyOsc.letgainDef]
+		}
+		/// Create the DSP Refence for this node
+		/// - Returns: DSP Reference
+		public override func createDSP() -> DSPRef { akCreateDSP("FaustMyOsc") }
+	}
 
 	// MARK: - Initialization
-    public init(_ input: Node? = nil, freq: AUValue = 440, gain: AUValue = 1
-    ) {
-        super.init(avAudioNode: input?.avAudioUnitOrNode ?? AVAudioNode())
+	public init(_ input: Node? = nil, freq: AUValue = 440, gain: AUValue = 1) {
+		super.init(avAudioNode: input?.avAudioUnitOrNode ?? AVAudioNode())
 		instantiateAudioUnit { avAudioUnit in
 			self.avAudioUnit = avAudioUnit
 			self.avAudioNode = avAudioUnit
@@ -63,5 +51,6 @@ public class FaustMyOsc: Node, AudioUnitContainer, Toggleable {
 			self.freq = freq
 			self.gain = gain
 		}
-    }
+	}
 }
+
