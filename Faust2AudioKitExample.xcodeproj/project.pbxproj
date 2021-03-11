@@ -3,32 +3,29 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BAFE6D1A25E7AFB10020DADA /* Faust2AudioKitExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D1925E7AFB10020DADA /* Faust2AudioKitExampleApp.swift */; };
-		BAFE6D1C25E7AFB10020DADA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D1B25E7AFB10020DADA /* ContentView.swift */; };
+		BA39B51D25FA38C200907939 /* Faust2AudioKitExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D1925E7AFB10020DADA /* Faust2AudioKitExampleApp.swift */; };
+		BA39B51F25FA38C500907939 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D1B25E7AFB10020DADA /* ContentView.swift */; };
+		BA39B52125FA38C800907939 /* MyOsc.dsp in Resources */ = {isa = PBXBuildFile; fileRef = BA39B50125FA293600907939 /* MyOsc.dsp */; };
+		BA39B52325FA38CB00907939 /* FaustDSP.mm in Sources */ = {isa = PBXBuildFile; fileRef = BA39B50925FA2A4600907939 /* FaustDSP.mm */; };
+		BA39B52525FA38CD00907939 /* FaustMyOsc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39B50A25FA2A4600907939 /* FaustMyOsc.swift */; };
 		BAFE6D1E25E7AFB30020DADA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAFE6D1D25E7AFB30020DADA /* Assets.xcassets */; };
 		BAFE6D2125E7AFB30020DADA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAFE6D2025E7AFB30020DADA /* Preview Assets.xcassets */; };
-		BAFE6D3425E7B3580020DADA /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = BAFE6D3325E7B3580020DADA /* AudioKit */; };
-		BAFE6D3725E7B3C60020DADA /* MyOsc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D3625E7B3C60020DADA /* MyOsc.swift */; };
-		BAFE6D3B25E7BB7C0020DADA /* MyOsc.dsp in Resources */ = {isa = PBXBuildFile; fileRef = BAFE6D3925E7BB7C0020DADA /* MyOsc.dsp */; };
-		BAFE6D4025E7BB8A0020DADA /* FaustMyOscDSP.mm in Sources */ = {isa = PBXBuildFile; fileRef = BAFE6D3E25E7BB8A0020DADA /* FaustMyOscDSP.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BA39B50125FA293600907939 /* MyOsc.dsp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MyOsc.dsp; sourceTree = "<group>"; };
+		BA39B50925FA2A4600907939 /* FaustDSP.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaustDSP.mm; sourceTree = "<group>"; };
+		BA39B50A25FA2A4600907939 /* FaustMyOsc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FaustMyOsc.swift; sourceTree = "<group>"; };
 		BAFE6D1625E7AFB10020DADA /* Faust2AudioKitExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Faust2AudioKitExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAFE6D1925E7AFB10020DADA /* Faust2AudioKitExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Faust2AudioKitExampleApp.swift; sourceTree = "<group>"; };
 		BAFE6D1B25E7AFB10020DADA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BAFE6D1D25E7AFB30020DADA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BAFE6D2025E7AFB30020DADA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BAFE6D2225E7AFB30020DADA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BAFE6D3025E7B34D0020DADA /* AudioKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKit; path = ../AudioKit; sourceTree = "<group>"; };
-		BAFE6D3625E7B3C60020DADA /* MyOsc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyOsc.swift; sourceTree = "<group>"; };
-		BAFE6D3925E7BB7C0020DADA /* MyOsc.dsp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MyOsc.dsp; sourceTree = "<group>"; };
-		BAFE6D3E25E7BB8A0020DADA /* FaustMyOscDSP.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FaustMyOscDSP.mm; path = myOsc/FaustMyOscDSP.mm; sourceTree = "<group>"; };
-		BAFE6D3F25E7BB8A0020DADA /* FaustMyOscDSP.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = FaustMyOscDSP.hpp; path = myOsc/FaustMyOscDSP.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,7 +33,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BAFE6D3425E7B3580020DADA /* AudioKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,7 +42,6 @@
 		BAFE6D0D25E7AFB10020DADA = {
 			isa = PBXGroup;
 			children = (
-				BAFE6D3025E7B34D0020DADA /* AudioKit */,
 				BAFE6D1825E7AFB10020DADA /* Faust2AudioKitExample */,
 				BAFE6D1725E7AFB10020DADA /* Products */,
 				BAFE6D3225E7B3580020DADA /* Frameworks */,
@@ -64,12 +59,11 @@
 		BAFE6D1825E7AFB10020DADA /* Faust2AudioKitExample */ = {
 			isa = PBXGroup;
 			children = (
-				BAFE6D3925E7BB7C0020DADA /* MyOsc.dsp */,
-				BAFE6D3F25E7BB8A0020DADA /* FaustMyOscDSP.hpp */,
-				BAFE6D3E25E7BB8A0020DADA /* FaustMyOscDSP.mm */,
-				BAFE6D3625E7B3C60020DADA /* MyOsc.swift */,
 				BAFE6D1925E7AFB10020DADA /* Faust2AudioKitExampleApp.swift */,
 				BAFE6D1B25E7AFB10020DADA /* ContentView.swift */,
+				BA39B50125FA293600907939 /* MyOsc.dsp */,
+				BA39B50925FA2A4600907939 /* FaustDSP.mm */,
+				BA39B50A25FA2A4600907939 /* FaustMyOsc.swift */,
 				BAFE6D1F25E7AFB30020DADA /* Preview Content */,
 				BAFE6D2225E7AFB30020DADA /* Info.plist */,
 				BAFE6D1D25E7AFB30020DADA /* Assets.xcassets */,
@@ -106,10 +100,10 @@
 			buildRules = (
 			);
 			dependencies = (
+				BA39B53125FA3C9400907939 /* PBXTargetDependency */,
 			);
 			name = Faust2AudioKitExample;
 			packageProductDependencies = (
-				BAFE6D3325E7B3580020DADA /* AudioKit */,
 			);
 			productName = Faust2AudioKitExample;
 			productReference = BAFE6D1625E7AFB10020DADA /* Faust2AudioKitExample.app */;
@@ -139,6 +133,8 @@
 				Base,
 			);
 			mainGroup = BAFE6D0D25E7AFB10020DADA;
+			packageReferences = (
+			);
 			productRefGroup = BAFE6D1725E7AFB10020DADA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -153,9 +149,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA39B52125FA38C800907939 /* MyOsc.dsp in Resources */,
 				BAFE6D2125E7AFB30020DADA /* Preview Assets.xcassets in Resources */,
 				BAFE6D1E25E7AFB30020DADA /* Assets.xcassets in Resources */,
-				BAFE6D3B25E7BB7C0020DADA /* MyOsc.dsp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,14 +162,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BAFE6D1C25E7AFB10020DADA /* ContentView.swift in Sources */,
-				BAFE6D3725E7B3C60020DADA /* MyOsc.swift in Sources */,
-				BAFE6D4025E7BB8A0020DADA /* FaustMyOscDSP.mm in Sources */,
-				BAFE6D1A25E7AFB10020DADA /* Faust2AudioKitExampleApp.swift in Sources */,
+				BA39B52325FA38CB00907939 /* FaustDSP.mm in Sources */,
+				BA39B52525FA38CD00907939 /* FaustMyOsc.swift in Sources */,
+				BA39B51F25FA38C500907939 /* ContentView.swift in Sources */,
+				BA39B51D25FA38C200907939 /* Faust2AudioKitExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BA39B53125FA3C9400907939 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = BA39B53025FA3C9400907939 /* AudioKit */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BAFE6D2325E7AFB30020DADA /* Debug */ = {
@@ -363,7 +366,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		BAFE6D3325E7B3580020DADA /* AudioKit */ = {
+		BA39B53025FA3C9400907939 /* AudioKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AudioKit;
 		};

@@ -42,11 +42,9 @@ Compilation options: -lang cpp -es 1 -scal -ftz 0
  ************************************************************************
  ************************************************************************/
 
-#ifndef FaustMyOsc_hpp
-#define FaustMyOsc_hpp
-
 #import "DSPBase.h"
 #import <algorithm>
+#import <vector>
 #import <assert.h>
 
 /************************** BEGIN dsp.h **************************/
@@ -271,7 +269,7 @@ class dsp_factory {
 
 #endif
 /**************************  END  dsp.h **************************/
-/************************** BEGIN MapUI.h **************************/
+/************************** BEGIN misc.h **************************/
 /************************************************************************
  FAUST Architecture File
  Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
@@ -295,12 +293,159 @@ class dsp_factory {
  architecture section is not modified.
  ************************************************************************/
 
-#ifndef FAUST_MAPUI_H
-#define FAUST_MAPUI_H
+#ifndef __misc__
+#define __misc__
 
-#include <vector>
+#include <algorithm>
 #include <map>
+#include <cstdlib>
+#include <string.h>
+#include <fstream>
 #include <string>
+
+/************************** BEGIN meta.h **************************/
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This Architecture section is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ************************************************************************/
+
+#ifndef __meta__
+#define __meta__
+
+/**
+ The base class of Meta handler to be used in dsp::metadata(Meta* m) method to retrieve (key, value) metadata.
+ */
+struct Meta
+{
+    virtual ~Meta() {};
+    virtual void declare(const char* key, const char* value) = 0;
+};
+
+#endif
+/**************************  END  meta.h **************************/
+
+using std::max;
+using std::min;
+
+struct XXXX_Meta : std::map<const char*, const char*>
+{
+    void declare(const char* key, const char* value) { (*this)[key] = value; }
+};
+
+struct MY_Meta : Meta, std::map<const char*, const char*>
+{
+    void declare(const char* key, const char* value) { (*this)[key] = value; }
+};
+
+static int lsr(int x, int n) { return int(((unsigned int)x) >> n); }
+
+static int int2pow2(int x) { int r = 0; while ((1<<r) < x) r++; return r; }
+
+static long lopt(char* argv[], const char* name, long def)
+{
+    for (int i = 0; argv[i]; i++) if (!strcmp(argv[i], name)) return std::atoi(argv[i+1]);
+    return def;
+}
+
+static long lopt1(int argc, char* argv[], const char* longname, const char* shortname, long def)
+{
+    for (int i = 2; i < argc; i++) {
+        if (strcmp(argv[i-1], shortname) == 0 || strcmp(argv[i-1], longname) == 0) {
+            return atoi(argv[i]);
+        }
+    }
+    return def;
+}
+
+static const char* lopts(char* argv[], const char* name, const char* def)
+{
+    for (int i = 0; argv[i]; i++) if (!strcmp(argv[i], name)) return argv[i+1];
+    return def;
+}
+
+static const char* lopts1(int argc, char* argv[], const char* longname, const char* shortname, const char* def)
+{
+    for (int i = 2; i < argc; i++) {
+        if (strcmp(argv[i-1], shortname) == 0 || strcmp(argv[i-1], longname) == 0) {
+            return argv[i];
+        }
+    }
+    return def;
+}
+
+static bool isopt(char* argv[], const char* name)
+{
+    for (int i = 0; argv[i]; i++) if (!strcmp(argv[i], name)) return true;
+    return false;
+}
+
+static std::string pathToContent(const std::string& path)
+{
+    std::ifstream file(path.c_str(), std::ifstream::binary);
+    
+    file.seekg(0, file.end);
+    int size = int(file.tellg());
+    file.seekg(0, file.beg);
+    
+    // And allocate buffer to that a single line can be read...
+    char* buffer = new char[size + 1];
+    file.read(buffer, size);
+    
+    // Terminate the string
+    buffer[size] = 0;
+    std::string result = buffer;
+    file.close();
+    delete [] buffer;
+    return result;
+}
+
+#endif
+
+/**************************  END  misc.h **************************/
+/************************** BEGIN DecoratorUI.h **************************/
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This Architecture section is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ************************************************************************/
+
+#ifndef Decorator_UI_H
+#define Decorator_UI_H
 
 /************************** BEGIN UI.h **************************/
 /************************************************************************
@@ -385,245 +530,93 @@ struct UI : public UIReal<FAUSTFLOAT>
 
 #endif
 /**************************  END  UI.h **************************/
-/************************** BEGIN PathBuilder.h **************************/
-/************************************************************************
- FAUST Architecture File
- Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
- ---------------------------------------------------------------------
- This Architecture section is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 3 of
- the License, or (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- 
- You should have received a copy of the GNU General Public License
- along with this program; If not, see <http://www.gnu.org/licenses/>.
- 
- EXCEPTION : As a special exception, you may create a larger work
- that contains this FAUST architecture section and distribute
- that work under terms of your choice, so long as this FAUST
- architecture section is not modified.
- ************************************************************************/
 
-#ifndef FAUST_PATHBUILDER_H
-#define FAUST_PATHBUILDER_H
+//----------------------------------------------------------------
+//  Generic UI empty implementation
+//----------------------------------------------------------------
 
-#include <vector>
-#include <string>
-#include <algorithm>
-
-/*******************************************************************************
- * PathBuilder : Faust User Interface
- * Helper class to build complete hierarchical path for UI items.
- ******************************************************************************/
-
-class PathBuilder
+class GenericUI : public UI
 {
-
-    protected:
-    
-        std::vector<std::string> fControlsLevel;
-       
-    public:
-    
-        PathBuilder() {}
-        virtual ~PathBuilder() {}
-    
-        std::string buildPath(const std::string& label) 
-        {
-            std::string res = "/";
-            for (size_t i = 0; i < fControlsLevel.size(); i++) {
-                res += fControlsLevel[i];
-                res += "/";
-            }
-            res += label;
-            std::replace(res.begin(), res.end(), ' ', '_');
-            return res;
-        }
-    
-        std::string buildLabel(std::string label)
-        {
-            std::replace(label.begin(), label.end(), ' ', '_');
-            return label;
-        }
-    
-        void pushLabel(const std::string& label) { fControlsLevel.push_back(label); }
-        void popLabel() { fControlsLevel.pop_back(); }
-    
-};
-
-#endif  // FAUST_PATHBUILDER_H
-/**************************  END  PathBuilder.h **************************/
-
-/*******************************************************************************
- * MapUI : Faust User Interface
- * This class creates a map of complete hierarchical path and zones for each UI items.
- ******************************************************************************/
-
-class MapUI : public UI, public PathBuilder
-{
-    
-    protected:
-    
-        // Complete path map
-        std::map<std::string, FAUSTFLOAT*> fPathZoneMap;
-    
-        // Label zone map
-        std::map<std::string, FAUSTFLOAT*> fLabelZoneMap;
-    
-        std::string fNullStr = "";
     
     public:
         
-        MapUI() {}
-        virtual ~MapUI() {}
+        GenericUI() {}
+        virtual ~GenericUI() {}
         
         // -- widget's layouts
-        void openTabBox(const char* label)
-        {
-            pushLabel(label);
-        }
-        void openHorizontalBox(const char* label)
-        {
-            pushLabel(label);
-        }
-        void openVerticalBox(const char* label)
-        {
-            pushLabel(label);
-        }
-        void closeBox()
-        {
-            popLabel();
-        }
+        virtual void openTabBox(const char* label) {}
+        virtual void openHorizontalBox(const char* label) {}
+        virtual void openVerticalBox(const char* label) {}
+        virtual void closeBox() {}
         
         // -- active widgets
-        void addButton(const char* label, FAUSTFLOAT* zone)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        void addCheckButton(const char* label, FAUSTFLOAT* zone)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        
+        virtual void addButton(const char* label, FAUSTFLOAT* zone) {}
+        virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) {}
+        virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
+        virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
+        virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
+    
         // -- passive widgets
-        void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT fmin, FAUSTFLOAT fmax)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
-        void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT fmin, FAUSTFLOAT fmax)
-        {
-            fPathZoneMap[buildPath(label)] = zone;
-            fLabelZoneMap[label] = zone;
-        }
+        virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) {}
+        virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) {}
     
         // -- soundfiles
-        virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
-        
-        // -- metadata declarations
-        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val)
-        {}
-        
-        // set/get
-        void setParamValue(const std::string& path, FAUSTFLOAT value)
-        {
-            if (fPathZoneMap.find(path) != fPathZoneMap.end()) {
-                *fPathZoneMap[path] = value;
-            } else if (fLabelZoneMap.find(path) != fLabelZoneMap.end()) {
-                *fLabelZoneMap[path] = value;
-            }
-        }
-        
-        FAUSTFLOAT getParamValue(const std::string& path)
-        {
-            if (fPathZoneMap.find(path) != fPathZoneMap.end()) {
-                return *fPathZoneMap[path];
-            } else if (fLabelZoneMap.find(path) != fLabelZoneMap.end()) {
-                return *fLabelZoneMap[path];
-            } else {
-                return FAUSTFLOAT(0);
-            }
-        }
+        virtual void addSoundfile(const char* label, const char* soundpath, Soundfile** sf_zone) {}
     
-        // map access 
-        std::map<std::string, FAUSTFLOAT*>& getMap() { return fPathZoneMap; }
-        
-        int getParamsCount() { return int(fPathZoneMap.size()); }
-        
-        const std::string& getParamAddress(int index)
-        {
-            if (index < 0 || index > int(fPathZoneMap.size())) {
-                return fNullStr;
-            } else {
-                auto it = fPathZoneMap.begin();
-                while (index-- > 0 && it++ != fPathZoneMap.end()) {}
-                return it->first;
-            }
-        }
+        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) {}
     
-        const std::string& getParamAddress(FAUSTFLOAT* zone)
-        {
-            for (auto& it : fPathZoneMap) {
-                if (it.second == zone) return it.first;
-            }
-            return fNullStr;
-        }
-    
-        FAUSTFLOAT* getParamZone(const std::string& str)
-        {
-            if (fPathZoneMap.find(str) != fPathZoneMap.end()) {
-                return fPathZoneMap[str];
-            }
-            if (fLabelZoneMap.find(str) != fLabelZoneMap.end()) {
-                return fLabelZoneMap[str];
-            }
-            return nullptr;
-        }
-    
-        FAUSTFLOAT* getParamZone(int index)
-        {
-            if (index < 0 || index > int(fPathZoneMap.size())) {
-                return nullptr;
-            } else {
-                auto it = fPathZoneMap.begin();
-                while (index-- > 0 && it++ != fPathZoneMap.end()) {}
-                return it->second;
-            }
-        }
-    
-        static bool endsWith(const std::string& str, const std::string& end)
-        {
-            size_t l1 = str.length();
-            size_t l2 = end.length();
-            return (l1 >= l2) && (0 == str.compare(l1 - l2, l2, end));
-        }
 };
 
+//----------------------------------------------------------------
+//  Generic UI decorator
+//----------------------------------------------------------------
 
-#endif // FAUST_MAPUI_H
-/**************************  END  MapUI.h **************************/
+class DecoratorUI : public UI
+{
+    
+    protected:
+        
+        UI* fUI;
+        
+    public:
+        
+        DecoratorUI(UI* ui = 0):fUI(ui) {}
+        virtual ~DecoratorUI() { delete fUI; }
+        
+        // -- widget's layouts
+        virtual void openTabBox(const char* label)          { fUI->openTabBox(label); }
+        virtual void openHorizontalBox(const char* label)   { fUI->openHorizontalBox(label); }
+        virtual void openVerticalBox(const char* label)     { fUI->openVerticalBox(label); }
+        virtual void closeBox()                             { fUI->closeBox(); }
+        
+        // -- active widgets
+        virtual void addButton(const char* label, FAUSTFLOAT* zone)         { fUI->addButton(label, zone); }
+        virtual void addCheckButton(const char* label, FAUSTFLOAT* zone)    { fUI->addCheckButton(label, zone); }
+        virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
+        { fUI->addVerticalSlider(label, zone, init, min, max, step); }
+        virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
+        { fUI->addHorizontalSlider(label, zone, init, min, max, step); }
+        virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
+        { fUI->addNumEntry(label, zone, init, min, max, step); }
+        
+        // -- passive widgets
+        virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
+        { fUI->addHorizontalBargraph(label, zone, min, max); }
+        virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
+        { fUI->addVerticalBargraph(label, zone, min, max); }
+    
+        // -- soundfiles
+        virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) { fUI->addSoundfile(label, filename, sf_zone); }
+    
+        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) { fUI->declare(zone, key, val); }
+    
+};
+
+// Defined here to simplify header #include inclusion 
+class SoundUIInterface : public GenericUI {};
+
+#endif
+/**************************  END  DecoratorUI.h **************************/
 
 #ifdef MIDICTRL
 /************************** BEGIN MidiUI.h **************************/
@@ -659,45 +652,6 @@ class MapUI : public UI, public PathBuilder
 #include <cstdlib>
 #include <cmath>
 
-/************************** BEGIN meta.h **************************/
-/************************************************************************
- FAUST Architecture File
- Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
- ---------------------------------------------------------------------
- This Architecture section is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 3 of
- the License, or (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- 
- You should have received a copy of the GNU General Public License
- along with this program; If not, see <http://www.gnu.org/licenses/>.
- 
- EXCEPTION : As a special exception, you may create a larger work
- that contains this FAUST architecture section and distribute
- that work under terms of your choice, so long as this FAUST
- architecture section is not modified.
- ************************************************************************/
-
-#ifndef __meta__
-#define __meta__
-
-/**
- The base class of Meta handler to be used in dsp::metadata(Meta* m) method to retrieve (key, value) metadata.
- */
-struct Meta
-{
-    virtual Meta() {};
-    virtual ~Meta() {};
-    virtual void declare(const char* key, const char* value) = 0;
-};
-
-#endif
-/**************************  END  meta.h **************************/
 /************************** BEGIN GUI.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -3102,6 +3056,79 @@ static void deleteClist(clist* cl)
 #include <sstream>
 #include <algorithm>
 
+/************************** BEGIN PathBuilder.h **************************/
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This Architecture section is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ************************************************************************/
+
+#ifndef FAUST_PATHBUILDER_H
+#define FAUST_PATHBUILDER_H
+
+#include <vector>
+#include <string>
+#include <algorithm>
+
+/*******************************************************************************
+ * PathBuilder : Faust User Interface
+ * Helper class to build complete hierarchical path for UI items.
+ ******************************************************************************/
+
+class PathBuilder
+{
+
+    protected:
+    
+        std::vector<std::string> fControlsLevel;
+       
+    public:
+    
+        PathBuilder() {}
+        virtual ~PathBuilder() {}
+    
+        std::string buildPath(const std::string& label) 
+        {
+            std::string res = "/";
+            for (size_t i = 0; i < fControlsLevel.size(); i++) {
+                res += fControlsLevel[i];
+                res += "/";
+            }
+            res += label;
+            std::replace(res.begin(), res.end(), ' ', '_');
+            return res;
+        }
+    
+        std::string buildLabel(std::string label)
+        {
+            std::replace(label.begin(), label.end(), ' ', '_');
+            return label;
+        }
+    
+        void pushLabel(const std::string& label) { fControlsLevel.push_back(label); }
+        void popLabel() { fControlsLevel.pop_back(); }
+    
+};
+
+#endif  // FAUST_PATHBUILDER_H
+/**************************  END  PathBuilder.h **************************/
 
 /*******************************************************************************
  * JSONUI : Faust User Interface
@@ -3616,6 +3643,203 @@ struct JSONUI : public JSONUIReal<FAUSTFLOAT>, public UI
 
 #endif // FAUST_JSONUI_H
 /**************************  END  JSONUI.h **************************/
+/************************** BEGIN MapUI.h **************************/
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This Architecture section is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ************************************************************************/
+
+#ifndef FAUST_MAPUI_H
+#define FAUST_MAPUI_H
+
+#include <vector>
+#include <map>
+#include <string>
+
+
+/*******************************************************************************
+ * MapUI : Faust User Interface
+ * This class creates a map of complete hierarchical path and zones for each UI items.
+ ******************************************************************************/
+
+class MapUI : public UI, public PathBuilder
+{
+    
+    protected:
+    
+        // Complete path map
+        std::map<std::string, FAUSTFLOAT*> fPathZoneMap;
+    
+        // Label zone map
+        std::map<std::string, FAUSTFLOAT*> fLabelZoneMap;
+    
+        std::string fNullStr = "";
+    
+    public:
+        
+        MapUI() {}
+        virtual ~MapUI() {}
+        
+        // -- widget's layouts
+        void openTabBox(const char* label)
+        {
+            pushLabel(label);
+        }
+        void openHorizontalBox(const char* label)
+        {
+            pushLabel(label);
+        }
+        void openVerticalBox(const char* label)
+        {
+            pushLabel(label);
+        }
+        void closeBox()
+        {
+            popLabel();
+        }
+        
+        // -- active widgets
+        void addButton(const char* label, FAUSTFLOAT* zone)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        void addCheckButton(const char* label, FAUSTFLOAT* zone)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT fmin, FAUSTFLOAT fmax, FAUSTFLOAT step)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        
+        // -- passive widgets
+        void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT fmin, FAUSTFLOAT fmax)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+        void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT fmin, FAUSTFLOAT fmax)
+        {
+            fPathZoneMap[buildPath(label)] = zone;
+            fLabelZoneMap[label] = zone;
+        }
+    
+        // -- soundfiles
+        virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
+        
+        // -- metadata declarations
+        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val)
+        {}
+        
+        // set/get
+        void setParamValue(const std::string& path, FAUSTFLOAT value)
+        {
+            if (fPathZoneMap.find(path) != fPathZoneMap.end()) {
+                *fPathZoneMap[path] = value;
+            } else if (fLabelZoneMap.find(path) != fLabelZoneMap.end()) {
+                *fLabelZoneMap[path] = value;
+            }
+        }
+        
+        FAUSTFLOAT getParamValue(const std::string& path)
+        {
+            if (fPathZoneMap.find(path) != fPathZoneMap.end()) {
+                return *fPathZoneMap[path];
+            } else if (fLabelZoneMap.find(path) != fLabelZoneMap.end()) {
+                return *fLabelZoneMap[path];
+            } else {
+                return FAUSTFLOAT(0);
+            }
+        }
+    
+        // map access 
+        std::map<std::string, FAUSTFLOAT*>& getMap() { return fPathZoneMap; }
+        
+        int getParamsCount() { return int(fPathZoneMap.size()); }
+        
+        const std::string& getParamAddress(int index)
+        {
+            if (index < 0 || index > int(fPathZoneMap.size())) {
+                return fNullStr;
+            } else {
+                auto it = fPathZoneMap.begin();
+                while (index-- > 0 && it++ != fPathZoneMap.end()) {}
+                return it->first;
+            }
+        }
+    
+        const std::string& getParamAddress(FAUSTFLOAT* zone)
+        {
+            for (auto& it : fPathZoneMap) {
+                if (it.second == zone) return it.first;
+            }
+            return fNullStr;
+        }
+    
+        FAUSTFLOAT* getParamZone(const std::string& str)
+        {
+            if (fPathZoneMap.find(str) != fPathZoneMap.end()) {
+                return fPathZoneMap[str];
+            }
+            if (fLabelZoneMap.find(str) != fLabelZoneMap.end()) {
+                return fLabelZoneMap[str];
+            }
+            return nullptr;
+        }
+    
+        FAUSTFLOAT* getParamZone(int index)
+        {
+            if (index < 0 || index > int(fPathZoneMap.size())) {
+                return nullptr;
+            } else {
+                auto it = fPathZoneMap.begin();
+                while (index-- > 0 && it++ != fPathZoneMap.end()) {}
+                return it->second;
+            }
+        }
+    
+        static bool endsWith(const std::string& str, const std::string& end)
+        {
+            size_t l1 = str.length();
+            size_t l2 = end.length();
+            return (l1 >= l2) && (0 == str.compare(l1 - l2, l2, end));
+        }
+};
+
+
+#endif // FAUST_MAPUI_H
+/**************************  END  MapUI.h **************************/
 /************************** BEGIN midi.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -6948,120 +7172,6 @@ class proxy_dsp : public dsp {
 #endif
 /**************************  END  proxy-dsp.h **************************/
 
-/************************** BEGIN DecoratorUI.h **************************/
-/************************************************************************
- FAUST Architecture File
- Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
- ---------------------------------------------------------------------
- This Architecture section is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 3 of
- the License, or (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- 
- You should have received a copy of the GNU General Public License
- along with this program; If not, see <http://www.gnu.org/licenses/>.
- 
- EXCEPTION : As a special exception, you may create a larger work
- that contains this FAUST architecture section and distribute
- that work under terms of your choice, so long as this FAUST
- architecture section is not modified.
- ************************************************************************/
-
-#ifndef Decorator_UI_H
-#define Decorator_UI_H
-
-
-//----------------------------------------------------------------
-//  Generic UI empty implementation
-//----------------------------------------------------------------
-
-class GenericUI : public UI
-{
-    
-    public:
-        
-        GenericUI() {}
-        virtual ~GenericUI() {}
-        
-        // -- widget's layouts
-        virtual void openTabBox(const char* label) {}
-        virtual void openHorizontalBox(const char* label) {}
-        virtual void openVerticalBox(const char* label) {}
-        virtual void closeBox() {}
-        
-        // -- active widgets
-        virtual void addButton(const char* label, FAUSTFLOAT* zone) {}
-        virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) {}
-        virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
-        virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
-        virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) {}
-    
-        // -- passive widgets
-        virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) {}
-        virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) {}
-    
-        // -- soundfiles
-        virtual void addSoundfile(const char* label, const char* soundpath, Soundfile** sf_zone) {}
-    
-        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) {}
-    
-};
-
-//----------------------------------------------------------------
-//  Generic UI decorator
-//----------------------------------------------------------------
-
-class DecoratorUI : public UI
-{
-    
-    protected:
-        
-        UI* fUI;
-        
-    public:
-        
-        DecoratorUI(UI* ui = 0):fUI(ui) {}
-        virtual ~DecoratorUI() { delete fUI; }
-        
-        // -- widget's layouts
-        virtual void openTabBox(const char* label)          { fUI->openTabBox(label); }
-        virtual void openHorizontalBox(const char* label)   { fUI->openHorizontalBox(label); }
-        virtual void openVerticalBox(const char* label)     { fUI->openVerticalBox(label); }
-        virtual void closeBox()                             { fUI->closeBox(); }
-        
-        // -- active widgets
-        virtual void addButton(const char* label, FAUSTFLOAT* zone)         { fUI->addButton(label, zone); }
-        virtual void addCheckButton(const char* label, FAUSTFLOAT* zone)    { fUI->addCheckButton(label, zone); }
-        virtual void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
-        { fUI->addVerticalSlider(label, zone, init, min, max, step); }
-        virtual void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
-        { fUI->addHorizontalSlider(label, zone, init, min, max, step); }
-        virtual void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step)
-        { fUI->addNumEntry(label, zone, init, min, max, step); }
-        
-        // -- passive widgets
-        virtual void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
-        { fUI->addHorizontalBargraph(label, zone, min, max); }
-        virtual void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
-        { fUI->addVerticalBargraph(label, zone, min, max); }
-    
-        // -- soundfiles
-        virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) { fUI->addSoundfile(label, filename, sf_zone); }
-    
-        virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) { fUI->declare(zone, key, val); }
-    
-};
-
-// Defined here to simplify header #include inclusion 
-class SoundUIInterface : public GenericUI {};
-
-#endif
-/**************************  END  DecoratorUI.h **************************/
 /************************** BEGIN JSONControl.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -8020,6 +8130,17 @@ struct dsp_poly_factory : public dsp_factory {
 /**************************  END  poly-dsp.h **************************/
 #endif
 
+#define FAUST_UIMACROS 1
+
+// but we will ignore most of them
+#define FAUST_ADDBUTTON(l,f)
+#define FAUST_ADDCHECKBOX(l,f)
+#define FAUST_ADDVERTICALSLIDER(l,f,i,a,b,s)
+#define FAUST_ADDHORIZONTALSLIDER(l,f,i,a,b,s)
+#define FAUST_ADDNUMENTRY(l,f,i,a,b,s)
+#define FAUST_ADDVERTICALBARGRAPH(l,f,a,b)
+#define FAUST_ADDHORIZONTALBARGRAPH(l,f,a,b)
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif 
@@ -8041,7 +8162,7 @@ struct dsp_poly_factory : public dsp_factory {
 
 class MyOsc : public dsp {
 	
- private:
+ public:
 	
 	FAUSTFLOAT fEntry0;
 	float fRec0[2];
@@ -8053,10 +8174,8 @@ class MyOsc : public dsp {
 	float fRec1[2];
 	
  public:
-
-// !! Caused error: Member access into incomplete type 'Meta'
-	void metadata(Meta* m) {
-#ifdef FAUST_MIDIUI_H
+	
+	void metadata(Meta* m) { 
 		m->declare("compile_options", "-lang cpp -es 1 -scal -ftz 0");
 		m->declare("filename", "MyOsc.dsp");
 		m->declare("maths.lib/author", "GRAME");
@@ -8071,23 +8190,18 @@ class MyOsc : public dsp {
 		m->declare("platform.lib/version", "0.1");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
-#endif
 	}
 
 	virtual int getNumInputs() {
 		return 0;
 	}
 	virtual int getNumOutputs() {
-		return 1;
+		return 2;
 	}
 	virtual int getInputRate(int channel) {
 		int rate;
 		switch ((channel)) {
-            case 0: {
-                rate = 1;
-                break;
-            }
-            default: {
+			default: {
 				rate = -1;
 				break;
 			}
@@ -8098,6 +8212,10 @@ class MyOsc : public dsp {
 		int rate;
 		switch ((channel)) {
 			case 0: {
+				rate = 1;
+				break;
+			}
+			case 1: {
 				rate = 1;
 				break;
 			}
@@ -8162,6 +8280,7 @@ class MyOsc : public dsp {
 	
 	virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) {
 		FAUSTFLOAT* output0 = outputs[0];
+		FAUSTFLOAT* output1 = outputs[1];
 		float fSlow0 = (0.00100000005f * float(fEntry0));
 		float fSlow1 = (0.00100000005f * float(fEntry1));
 		for (int i = 0; (i < count); i = (i + 1)) {
@@ -8173,7 +8292,9 @@ class MyOsc : public dsp {
 			int iTemp3 = (fTemp2 < 0.0f);
 			fRec1[0] = (iTemp3 ? fTemp1 : fTemp2);
 			float fRec2 = (iTemp3 ? fTemp1 : (fTemp1 + ((1.0f - (fConst0 / fTemp0)) * fTemp2)));
-			output0[i] = FAUSTFLOAT((fRec0[0] * ((2.0f * fRec2) + -1.0f)));
+			float fTemp4 = (fRec0[0] * ((2.0f * fRec2) + -1.0f));
+			output0[i] = FAUSTFLOAT(fTemp4);
+			output1[i] = FAUSTFLOAT(fTemp4);
 			fRec0[1] = fRec0[0];
 			fRec3[1] = fRec3[0];
 			fRec1[1] = fRec1[0];
@@ -8182,23 +8303,84 @@ class MyOsc : public dsp {
 
 };
 
-struct FaustMyOscDSP : public DSPBase {
+#ifdef FAUST_UIMACROS
+	
+	#define FAUST_FILE_NAME "MyOsc.dsp"
+	#define FAUST_CLASS_NAME "MyOsc"
+	#define FAUST_INPUTS 0
+	#define FAUST_OUTPUTS 2
+	#define FAUST_ACTIVES 2
+	#define FAUST_PASSIVES 0
 
+	FAUST_ADDNUMENTRY("freq", fEntry1, 440.0f, 20.0f, 20000.0f, 0.01f);
+	FAUST_ADDNUMENTRY("gain", fEntry0, 1.0f, 0.0f, 1.0f, 0.01f);
+
+	#define FAUST_LIST_ACTIVES(p) \
+		p(NUMENTRY, freq, "freq", fEntry1, 440.0f, 20.0f, 20000.0f, 0.01f) \
+		p(NUMENTRY, gain, "gain", fEntry0, 1.0f, 0.0f, 1.0f, 0.01f) \
+
+	#define FAUST_LIST_PASSIVES(p) \
+
+#endif
+
+class FaustMyOsc : public DSPBase, public GenericUI {
+    
     private:
         MyOsc* fDSP;
+        size_t inputChannelCount = 0;
+        size_t outputChannelCount = 0;
+        std::vector<FAUSTFLOAT*> fZones;
     #ifdef MIDICTRL
         midi_handler fMidiHandler;
         MidiUI fMidiUI;
     #endif
+    
+        // -- active widgets
+        void addButton(const char* label, FAUSTFLOAT* zone) override { fZones.push_back(zone); }
+        void addCheckButton(const char* label, FAUSTFLOAT* zone) override { fZones.push_back(zone); }
+        void addVerticalSlider(const char*
+                               label,
+                               FAUSTFLOAT* zone,
+                               FAUSTFLOAT init,
+                               FAUSTFLOAT min,
+                               FAUSTFLOAT max,
+                               FAUSTFLOAT step) override
+        {
+            fZones.push_back(zone);
+        }
+        void addHorizontalSlider(const char*
+                                 label,
+                                 FAUSTFLOAT* zone,
+                                 FAUSTFLOAT init,
+                                 FAUSTFLOAT min,
+                                 FAUSTFLOAT max,
+                                 FAUSTFLOAT step) override
+        {
+            fZones.push_back(zone);
+        }
+        void addNumEntry(const char*
+                         label,
+                         FAUSTFLOAT* zone,
+                         FAUSTFLOAT init,
+                         FAUSTFLOAT min,
+                         FAUSTFLOAT max,
+                         FAUSTFLOAT step) override
+        {
+            fZones.push_back(zone);
+        }
+    
+        // -- passive widgets
+        void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override {}
+        void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override {}
+    
     public:
     
     #ifdef MIDICTRL
         FaustMyOsc():fMidiUI(&fMidiHandler)
     #else
-        FaustMyOscDSP()
+        FaustMyOsc()
     #endif
         {
-        bCanProcessInPlace = true;
         #ifdef POLY
             int nvoices = 0;
             bool midi_sync = false;
@@ -8208,21 +8390,25 @@ struct FaustMyOscDSP : public DSPBase {
         #else
             fDSP = new MyOsc();
         #endif
-            channelCount = std::max(fDSP->getNumInputs(), fDSP->getNumOutputs());
+            inputChannelCount = fDSP->getNumInputs();
+            outputChannelCount = fDSP->getNumOutputs();
         #ifdef MIDICTRL
             fDSP->buildUserInterface(&fMidiUI);
         #endif
+            fDSP->buildUserInterface(this);
             //assert(fDSP->getNumInputs() == (fDSP->getNumOutputs()));
         }
     
-        ~FaustMyOscDSP()
+        ~FaustMyOsc()
         {
             delete fDSP;
         }
     
         void setParameter(AUParameterAddress address, float value, bool immediate) override
         {
-            // TODO
+             if (address < fZones.size()) {
+                *fZones[address] = value;
+             }
         }
     
         void init(int channelCount, double sampleRate) override
@@ -8245,21 +8431,26 @@ struct FaustMyOscDSP : public DSPBase {
                 fMidiHandler.handleData2(ev.eventSampleTime, ev.eventType, ev.data[0], ev.data[1]);
             }
         }
-     #endif
+    #endif
     
         void startRamp(const AUParameterEvent &event) override
         {
-            // TODO
+            auto address = event.parameterAddress;
+            if (address < fZones.size()) {
+                *fZones[address] = event.value;
+            }
         }
     
         // Need to override this since it's pure virtual.
         void process(AUAudioFrameCount frameCount, AUAudioFrameCount bufferOffset) override
         {
-            float* inputs[channelCount];
-            float* outputs[channelCount];
-            for (int channel = 0; channel < channelCount; ++channel) {
-                // leaving input for another day
-//                inputs[channel] = (float*)inputBufferLists[0]->mBuffers[channel].mData + bufferOffset;
+            float* inputs[inputChannelCount];
+            float* outputs[outputChannelCount];
+
+            for (int channel = 0; channel < inputChannelCount; ++channel) {
+                inputs[channel] = (float*)inputBufferLists[0]->mBuffers[channel].mData + bufferOffset;
+            }
+            for (int channel = 0; channel < outputChannelCount; ++channel) {
                 outputs[channel] = (float*)outputBufferList->mBuffers[channel].mData + bufferOffset;
             }
             fDSP->compute(int(frameCount), inputs, outputs);
@@ -8267,7 +8458,20 @@ struct FaustMyOscDSP : public DSPBase {
     
 };
 
-#endif /* FaustMyOsc_hpp */
+// Register AK class and parameters
+
+enum MyOscParameter : AUParameterAddress {
+#define ACTIVE_ENUM_MEMBER(type, ident, name, var, def, min, max, step) \
+MyOsc_##ident,
+    FAUST_LIST_ACTIVES(ACTIVE_ENUM_MEMBER)
+    kNumActives,
+};
+
+AK_REGISTER_DSP(FaustMyOsc)
+
+#define REGISTER_PARAMETER(type, ident, name, var, def, min, max, step) \
+    AK_REGISTER_PARAMETER(MyOsc_##ident)
+FAUST_LIST_ACTIVES(REGISTER_PARAMETER);
 
 /********************END ARCHITECTURE SECTION (part 2/2)****************/
 

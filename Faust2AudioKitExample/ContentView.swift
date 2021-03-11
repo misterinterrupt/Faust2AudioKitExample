@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+
+    @ObservedObject
     var app: FaustExampleApp = .shared
+
     var body: some View {
         Text("Faust!")
             .padding()
